@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %} Sorting Algorithms {% endblock %}
+
+{% block content %}
+<h1> Sorting Algorithms </h1>
+    <form method="post" class="mb-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Sort</button>
+    </form>
+
+{% if original_list %}
+    <h4>Original List:</h4>
+    <p>{{ original_list }}</p>
+{% endif %}
+
+{% if sorted_list %}
+    <h4>Sorted List:</h4>
+    <p>{{ sorted_list }}</p>
+{% endif %}
+
+{% if results %}
+  <h4>Results:</h4>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Sorted Output</th>
+        <th>Time Taken</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for result in results %}
+        <tr>
+          <td>{{ result.method }}</td>
+          <td>{{ result.sorted }}</td>
+          <td>{{ result.time }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+{% endblock %}
