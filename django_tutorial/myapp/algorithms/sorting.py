@@ -24,14 +24,14 @@ def quicksort(data):
         return data
 
     pivot = data[int(len(data)/2)]
-    left = np.array([x for x in data if x < pivot])
-    middle = np.array([x for x in data if x == pivot])
-    right = np.array([x for x in data if x > pivot ])
+    left = [x for x in data if x < pivot]
+    middle = [x for x in data if x == pivot]
+    right = [x for x in data if x > pivot ]
 
     left = quicksort(left)
     right = quicksort(right)
-    sorted = np.concatenate((left, middle, right))
-    return list(sorted)
+    sorted = left + middle + right
+    return sorted
 
 def quicksort_inplace(data, start_idx=0, end_idx=None):
     if end_idx is None:
