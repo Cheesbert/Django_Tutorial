@@ -69,15 +69,17 @@ def heapify(data, n, i):
         heapify(data, n, head)
 
 def heapsort(data):
+    data = data.copy()
     n = len(data)
 
-    for i in range(n/2 - 1, -1, -1): # Max heap from input Array
+    for i in range(n // 2 - 1, -1, -1):
         heapify(data, n, i)
 
     for i in range(n-1, 0, -1):
-        data[0], data[i] = data[i], data[0] # move largest to end
+        data[0], data[i] = data[i], data[0]
         heapify(data, i ,0)
 
+    return data
 
 if __name__ == "__main__":
     data = np.array([2, 6, 1, 6, 8, 17, 13, 11, 33])

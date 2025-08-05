@@ -1,10 +1,11 @@
 from django import forms
-from .algorithm_methods import SortMethods # supports iteration
+from .algorithm_methods.sorting_methods import SortMethods # supports iteration
 
 class SortForm(forms.Form):
     user_input_list = forms.CharField(
-        label="Enter list of numbers for sorting (e.g. 5,3,7)",
-        required=False
+        label="Enter list of numbers for sorting (e.g. 1,3,7)",
+        required=False,
+        widget = forms.TextInput(attrs={"placeholder": "1,3,4"})
     )
     sort_methods = forms.MultipleChoiceField(
         choices=SortMethods.choices(),
@@ -27,4 +28,22 @@ class SortForm(forms.Form):
         label="Length for list",
         required=False
     )
+
+class GraphForm(forms.Form):
+    user_node_input = forms.CharField(
+        label="Enter node value (eg 1,3,4) which creates 3 nodes with given values",
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "1,2,3"})
+    )
+    user_edge_start = forms.CharField(
+        label="Enter start node (eg 1 for node1)",
+        required=False,
+        widget = forms.TextInput(attrs={"placeholder": "1"})
+    )
+    user_edge_end = forms.CharField(
+        label="Enter end node (eg 2 for node2)",
+        required=False,
+        widget = forms.TextInput(attrs={"placeholder": "1,3,4"})
+    )
+
 

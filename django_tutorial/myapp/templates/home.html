@@ -1,5 +1,21 @@
 
-{% extends "base.html" %} {% block title %} Home Page {% endblock %}
+{% extends "base.html" %} {% block title %} AlgoComparator {% endblock %}
 {% block content %}
-<p> this is a hompage page </p>
+<div class="mt-5 text-center">
+    <h2>
+        <a  class="text-decoration-none text-dark">
+            Implemented Algorithms
+        </a>
+    </h2>
+</div>
+<div class="mt-5 text-center">
+    <h3>
+        <a href="{% url 'sorting' %}" class="text-decoration-none text-dark">
+            Sorting Comparison
+        </a>
+    </h3>
+        <p class="lead mt-3">
+            Compare the performance of classic sorting algorithms.
+        </p>
+</div>
 {% endblock %}

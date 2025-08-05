@@ -1,11 +1,13 @@
 import time
 import numpy as np
 
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render
 
-from .forms import SortForm
+from .forms import SortForm, GraphForm
 from .models import TodoItem
-from .algorithm_methods import SortMethods
+from .algorithm_methods.sorting_methods import SortMethods
+from .data_structures.graph_types import GraphTypes
+
 
 # Create your views here.
 
@@ -56,12 +58,27 @@ def sorting_view(request):
     else:
         form = SortForm()
 
-    print(results)
     return render(request, 'sorting.html', {
         "form": form,
         "original_list": unsorted_list,
         "results": results
     })
+
+def graph_view(request):
+    if request.method == "POST":
+        form = GraphForm(request.POST)
+        graph = Graph()
+        if form.is_valid():
+            node_input = form.cleaned_data["user_node_input"]
+            edge_start = form.cleaned_data["use_edge_start"]
+            edge_end = form.cleaned_data["use_edge_end"]
+
+        if node_input:
+            node_values = [int(x.strip()) for x in node_input.split(',') if x.strip().isdigit()]
+            for value in node_values:
+
+
+
 
 def todos(request):
     items = TodoItem.objects.all
