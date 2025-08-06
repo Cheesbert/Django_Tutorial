@@ -1,5 +1,6 @@
 from django import forms
 from .algorithm_methods.sorting_methods import SortMethods # supports iteration
+from .data_structures.graph_types import GraphTypes
 
 class SortForm(forms.Form):
     user_input_list = forms.CharField(
@@ -30,6 +31,11 @@ class SortForm(forms.Form):
     )
 
 class GraphForm(forms.Form):
+    user_graph_selection = forms.ChoiceField(
+        choices=GraphTypes.choices(),
+        widget=forms.RadioSelect,
+        required=True
+    )
     user_node_input = forms.CharField(
         label="Enter node value (eg 1,3,4) which creates 3 nodes with given values",
         required=False,

@@ -1,7 +1,12 @@
+import base64
 import time
+from io import BytesIO
+
 import numpy as np
+import cv2 as cv
 
 from django.shortcuts import render
+from matplotlib import pyplot as plt
 
 from .forms import SortForm, GraphForm
 from .models import TodoItem
@@ -9,7 +14,6 @@ from .algorithm_methods.sorting_methods import SortMethods
 from .data_structures.graph_types import GraphTypes
 
 
-# Create your views here.
 
 def home(request):
     return render(request,"home.html")
@@ -33,7 +37,7 @@ def sorting_view(request):
                     form.add_error(None, "List length, min and max are required for list generation")
                 elif list_range_min > list_range_max or list_length <= 0:
                     form.add_error(None, "List length must be greater than 0 and min_range cannot be bigger than max_range")
-                else: # valid input create list
+                else: # Valid input create list
                     unsorted_list = np.random.randint(list_range_min, list_range_max + 1, size=list_length).tolist()
 
             else: # User generated list
@@ -45,9 +49,9 @@ def sorting_view(request):
 
             if unsorted_list and len(unsorted_list) > 1:
                 for method in selected_methods:
-                    func = SortMethods.get_func(key=method)
+                    sort_func = SortMethods.get_func(key=method)
                     start = time.perf_counter_ns()
-                    sorted_list = func(unsorted_list)
+                    sorted_list = sort_func(unsorted_list)
                     end = time.perf_counter_ns()
                     results.append({
                         "method": method,
@@ -65,19 +69,41 @@ def sorting_view(request):
     })
 
 def graph_view(request):
+    graph_img = None
+    node_input = None
+    graph = None
+    edge_start = None
+    edge_end = None
+
     if request.method == "POST":
         form = GraphForm(request.POST)
-        graph = Graph()
         if form.is_valid():
             node_input = form.cleaned_data["user_node_input"]
-            edge_start = form.cleaned_data["use_edge_start"]
-            edge_end = form.cleaned_data["use_edge_end"]
+            edge_start = form.cleaned_data["user_edge_start"]
+            edge_end = form.cleaned_data["user_edge_end"]
+            graph_type = form.cleaned_data["user_graph_selection"]
+            graph_cls = GraphTypes.get_graph_type(key=graph_type)
+            graph = graph_cls()
 
         if node_input:
             node_values = [int(x.strip()) for x in node_input.split(',') if x.strip().isdigit()]
             for value in node_values:
+                graph.add_node(value)
 
+        if graph and edge_start and edge_end:
+            try:
+                graph.add_edge(int(edge_start), int(edge_end))
+            except Exception as e:
+                print("Edge error:", e)
 
+        if graph:
+            graph_img = graph.draw(format="base64")  # assumes graph has a draw() method using matplotlib
+    else:
+        form = GraphForm()
+
+    return render(request, "graph.html",
+        {"form": form, "graph_img": graph_img}
+    )
 
 
 def todos(request):

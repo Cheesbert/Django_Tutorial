@@ -1,16 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %} Sorting Algorithms {% endblock %}
+{% block title %} Graph {% endblock %}
 
 {% block content %}
-<html>
-<head>
-    <title>Graph Display</title>
-</head>
-<body>
-    <h1>Graph</h1>
+
+<h1>Graph Display</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Generate Graph</button>
+</form>
+
+{% if graph_img %}
+    <h2>Generated Graph:</h2>
     <img src="data:image/png;base64,{{ graph_img }}" alt="Graph">
-</body>
-</html>
+{% elif form.errors %}
+    <h3 style="color: red;">Please correct the errors in the form.</h3>
+{% endif %}
 
 {% endblock %}

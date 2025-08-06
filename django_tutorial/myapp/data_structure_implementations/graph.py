@@ -3,7 +3,10 @@ import base64
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2 as cv
-from django_tutorial.myapp.algorithm_methods.draw_shapes import rectangle
+from PIL import Image
+import io
+from ..algorithm_methods.draw_shapes import rectangle
+# from django_tutorial.myapp.algorithm_methods.draw_shapes import rectangle
 
 class Node():
     def __init__(self, data):
@@ -52,13 +55,13 @@ class Basic_Graph():
             cv.putText(canvas, f"{key}: {self.get_value(key)}", (pos[0] - 10, pos[1] + 5),
                        cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
-        cv.imshow("Graph", canvas)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
 
-        if format == "png":
-            _, buffer = cv.imencode('.png', canvas)
-            img_base64 = base64.b64encode(buffer).decode('utf-8')
+        if format == "base64":
+            canvas_uint8 = np.clip(canvas * 255, 0, 255).astype(np.uint8)
+            image = Image.fromarray(canvas_uint8)
+            buffer = io.BytesIO()
+            image.save(buffer, format="PNG")
+            img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
             return img_base64
         else:
             return canvas
@@ -79,4 +82,7 @@ if __name__ == '__main__':
     g.add_edge(1, 3)
     g.add_edge(3, 4)
 
-    g.draw()
+    img = g.draw(format="np.array")
+    cv.imshow("img", img)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
