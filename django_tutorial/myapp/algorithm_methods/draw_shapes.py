@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2 as cv
 
-def circle_outline(canvas, center, radius, color=0, thickness=1):
+def circle_outline(canvas, center, radius, color=1, thickness=1):
     pass
 
-def rectangle(canvas, center, size, color=0, thickness=1, outline=True):
+def rectangle(canvas, center, size, color=1, thickness=1, outline=True):
     x, y = center[0], center[1]
     half = size // 2
     top = y - half

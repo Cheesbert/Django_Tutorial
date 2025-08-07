@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 from PIL import Image
 import io
-from ..algorithm_methods.draw_shapes import rectangle
+from myapp.constants import colors
+from myapp.algorithm_methods.draw_shapes import rectangle
 # from django_tutorial.myapp.algorithm_methods.draw_shapes import rectangle
 
 class Node():
@@ -35,9 +36,9 @@ class Basic_Graph():
     def get_value(self, key):
         return self.nodes[key].data
 
-    def draw(self, node_size=50, format="png"):
+    def draw(self, node_size=50, format="png", color=colors.RED):
         canvas_size = len(self.nodes) * node_size
-        canvas = np.ones((canvas_size, canvas_size))
+        canvas = np.ones((canvas_size, canvas_size, 3))
         x = node_size
         y = node_size
         positions = {}
@@ -51,9 +52,12 @@ class Basic_Graph():
             x += node_size * 2
 
         for key, pos in positions.items():
-            rectangle(canvas, pos, node_size)
+            rectangle(canvas, pos, node_size, color)
             cv.putText(canvas, f"{key}: {self.get_value(key)}", (pos[0] - 10, pos[1] + 5),
                        cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+
+        # Draw edges
+
 
 
         if format == "base64":
