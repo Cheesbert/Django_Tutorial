@@ -6,6 +6,7 @@ import cv2 as cv
 from PIL import Image
 import io
 from myapp.constants import colors
+from myapp.algorithm_implementations.pathfinding import dijkstra_grid
 from myapp.algorithm_methods.draw_shapes import rectangle
 # from django_tutorial.myapp.algorithm_methods.draw_shapes import rectangle
 
@@ -21,7 +22,7 @@ class Node():
 class Basic_Graph():
     def __init__(self):
         self.nodes = {}
-        self.size = 1
+        self.size = 0
 
     def add_node(self, data):
         self.nodes.update({self.size: Node(data)})
@@ -36,27 +37,36 @@ class Basic_Graph():
     def get_value(self, key):
         return self.nodes[key].data
 
-    def draw(self, node_size=50, format="png", color=colors.RED):
+    def draw(self, node_size=50, format="png", field_color=colors.WHITE, node_color=colors.BLUE, edge_color=colors.RED):
         canvas_size = len(self.nodes) * node_size
-        canvas = np.ones((canvas_size, canvas_size, 3))
-        x = node_size
-        y = node_size
+        canvas = np.full((canvas_size, canvas_size, 3), field_color, dtype=np.uint8)
+        col = node_size
+        row = node_size
         positions = {}
 
         for i, node in enumerate(self.nodes.values()):
-            if x >= canvas_size:
-                y += node_size * 2
-                x = node_size
+            if col >= canvas_size:
+                row += node_size * 2
+                col = node_size
 
-            positions[i+1] = (x, y)
-            x += node_size * 2
+            positions[node] = (row, col)
+            col += node_size * 2
 
-        for key, pos in positions.items():
-            rectangle(canvas, pos, node_size, color)
-            cv.putText(canvas, f"{key}: {self.get_value(key)}", (pos[0] - 10, pos[1] + 5),
+        for i , pos in enumerate(positions.values()):
+            rectangle(canvas, pos, node_size, node_color)
+            cv.putText(canvas, f"{i}: {self.get_value(i)}", ( pos[1] , pos [0]),
                        cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
         # Draw edges
+        paths = []
+        for i, node in enumerate(self.nodes.values()):
+            for neighbor in node.neighbors:
+
+                paths.append(dijkstra_grid(canvas, start=positions[node], end=positions[neighbor], node_color=node_color))
+
+        for path in paths:
+            for col, row in path[node_size//2 : -node_size//2]:
+                canvas[col , row, :] = edge_color
 
 
 
@@ -82,9 +92,10 @@ if __name__ == '__main__':
     g.add_node(7)
     g.add_node(8)
 
-    g.add_edge(1, 2)
+    g.add_edge(5, 7)
     g.add_edge(1, 3)
-    g.add_edge(3, 4)
+    g.add_edge(2, 7)
+    g.add_edge(3, 5)
 
     img = g.draw(format="np.array")
     cv.imshow("img", img)

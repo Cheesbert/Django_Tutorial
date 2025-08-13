@@ -1,7 +1,7 @@
 
 
 BLACK = 0
-WHITE = 255
+WHITE = (255, 255, 255)
 GRAY = 128
 
 RED = (255, 0, 0)
