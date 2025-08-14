@@ -7,7 +7,7 @@ from PIL import Image
 import io
 from myapp.constants import colors
 from myapp.algorithm_implementations.pathfinding import dijkstra_grid
-from myapp.algorithm_methods.draw_shapes import rectangle
+from myapp.algorithm_methods.draw_shapes import rectangle, draw_arrow
 # from django_tutorial.myapp.algorithm_methods.draw_shapes import rectangle
 
 class Node():
@@ -61,14 +61,14 @@ class Basic_Graph():
         paths = []
         for i, node in enumerate(self.nodes.values()):
             for neighbor in node.neighbors:
-
                 paths.append(dijkstra_grid(canvas, start=positions[node], end=positions[neighbor], node_color=node_color))
 
         for path in paths:
-            for col, row in path[node_size//2 : -node_size//2]:
-                canvas[col , row, :] = edge_color
+            for row, col in path[node_size//2 : -node_size//2]:
+                canvas[row , col, :] = edge_color
 
-
+            row_b, col_b = path[len(path) - (node_size//2)* 2]
+            draw_arrow(canvas, front=(row, col), back=(row_b, col_b), color=colors.GREEN)
 
         if format == "base64":
             canvas_uint8 = np.clip(canvas * 255, 0, 255).astype(np.uint8)
@@ -92,10 +92,7 @@ if __name__ == '__main__':
     g.add_node(7)
     g.add_node(8)
 
-    g.add_edge(5, 7)
     g.add_edge(1, 3)
-    g.add_edge(2, 7)
-    g.add_edge(3, 5)
 
     img = g.draw(format="np.array")
     cv.imshow("img", img)
