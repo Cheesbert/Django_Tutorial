@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 import cv2 as cv
 from PIL import Image
 import io
-from myapp.constants import colors
+from myapp.constants.colors import Color
 from myapp.algorithm_implementations.pathfinding import dijkstra_grid
-from myapp.algorithm_methods.draw_shapes import rectangle, draw_arrow
+from myapp.algorithm_methods.draw_shapes import draw_rectangle, draw_arrow, draw_line
 # from django_tutorial.myapp.algorithm_methods.draw_shapes import rectangle
 
 class Node():
@@ -37,7 +37,7 @@ class Basic_Graph():
     def get_value(self, key):
         return self.nodes[key].data
 
-    def draw(self, node_size=50, format="png", field_color=colors.WHITE, node_color=colors.BLUE, edge_color=colors.RED):
+    def draw(self, node_size=50, format="png", field_color=Color.WHITE.rgb(), node_color=Color.BLUE.rgb(), edge_color=Color.RED.rgb()):
         canvas_size = len(self.nodes) * node_size
         canvas = np.full((canvas_size, canvas_size, 3), field_color, dtype=np.uint8)
         col = node_size
@@ -53,7 +53,7 @@ class Basic_Graph():
             col += node_size * 2
 
         for i , pos in enumerate(positions.values()):
-            rectangle(canvas, pos, node_size, node_color)
+            draw_rectangle(canvas, pos, node_size, node_color)
             cv.putText(canvas, f"{i}: {self.get_value(i)}", ( pos[1] , pos [0]),
                        cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
@@ -61,22 +61,22 @@ class Basic_Graph():
         paths = []
         for i, node in enumerate(self.nodes.values()):
             for neighbor in node.neighbors:
+                path = dijkstra_grid(canvas, start=positions[node], end=positions[neighbor], node_color=node_color)
                 paths.append(dijkstra_grid(canvas, start=positions[node], end=positions[neighbor], node_color=node_color))
 
-        for path in paths:
-            for row, col in path[node_size//2 : -node_size//2]:
-                canvas[row , col, :] = edge_color
+                for row, col in path[node_size // 2: -node_size // 2]:
+                    canvas[row, col, :] = edge_color
 
-            row_b, col_b = path[len(path) - (node_size//2)* 2]
-            draw_arrow(canvas, front=(row, col), back=(row_b, col_b), color=colors.GREEN)
+                row_b, col_b = path[len(path) - (node_size // 2) * 2]
+                # draw_line(canvas, start=(row, col), end=(row_b, col_b), color=Color.CYAN.bgr())
+                draw_arrow(canvas, front=(row, col), back=(row_b, col_b), color=edge_color)
+                #edge_color = edge_color
 
         if format == "base64":
-            canvas_uint8 = np.clip(canvas * 255, 0, 255).astype(np.uint8)
-            image = Image.fromarray(canvas_uint8)
+            image = Image.fromarray(canvas)
             buffer = io.BytesIO()
             image.save(buffer, format="PNG")
-            img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
-            return img_base64
+            return base64.b64encode(buffer.getvalue()).decode("utf-8")
         else:
             return canvas
 
@@ -87,14 +87,14 @@ if __name__ == '__main__':
     g.add_node(2)
     g.add_node(3)
     g.add_node(4)
-    g.add_node(5)
-    g.add_node(6)
-    g.add_node(7)
-    g.add_node(8)
 
+    g.add_edge(0, 3)
     g.add_edge(1, 3)
 
-    img = g.draw(format="np.array")
+    img = g.draw(format="np")
+    # with open("debug.png", "wb") as f:
+    #     f.write(base64.b64decode(img))
+
     cv.imshow("img", img)
     cv.waitKey(0)
     cv.destroyAllWindows()

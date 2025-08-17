@@ -2,10 +2,10 @@ import heapq
 import queue
 import numpy as np
 
-from myapp.constants import colors
+from myapp.constants.colors import Color
 
 
-def dijkstra_grid(array, start, end, free_color=colors.WHITE, node_color=colors.BLACK):
+def dijkstra_grid(array, start, end, free_color=Color.WHITE, node_color=Color.BLACK):
     rows, cols = len(array), len(array[0])
     weight_free = 1
     weight_node = 1000

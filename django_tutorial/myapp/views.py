@@ -1,5 +1,6 @@
 import base64
 import time
+from datetime import datetime
 from io import BytesIO
 
 import numpy as np
@@ -77,6 +78,11 @@ def graph_view(request):
 
     if request.method == "POST":
         form = GraphForm(request.POST)
+        ##
+        log_file = "debug_file.txt"
+        log = {}
+        ##
+
         if form.is_valid():
             node_input = form.cleaned_data["user_node_input"]
             edge_start = form.cleaned_data["user_edge_start"]
@@ -87,6 +93,7 @@ def graph_view(request):
 
         if node_input:
             node_values = [int(x.strip()) for x in node_input.split(',') if x.strip().isdigit()]
+            log.update({"node_values" : node_values})
             for value in node_values:
                 graph.add_node(value)
 
@@ -98,6 +105,8 @@ def graph_view(request):
 
         if graph:
             graph_img = graph.draw(format="base64")  # assumes graph has a draw() method using matplotlib
+            with open("debug_file.txt", "w") as f:
+                f.write(str(log))
     else:
         form = GraphForm()
 

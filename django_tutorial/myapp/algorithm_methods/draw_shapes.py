@@ -1,36 +1,42 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2 as cv
-from myapp.constants import colors
+from myapp.constants.colors import Color
 
 
 def circle_outline(canvas, center, radius, color=1, thickness=1):
     pass
 
 
-def draw_arrow(canvas, front, back, length=None, color=colors.BLACK):
-    vec_row = back[0] - front[0]
-    vec_col = back[1] - front[1]
+def draw_arrow(canvas, front, back, color=Color.BLACK.rgb(), arrow_len=None, arrow_width=None):
+    dr = front[0] - back[0]
+    dc = front[1] - back[1]
 
-    if length is None:
-        length = np.hypot(vec_row, vec_col)
 
-    if length == 0: return
+    length = np.hypot(dr, dc)
+    if length == 0:
+        return
 
-    dir_row = vec_row / length
-    dir_col = vec_col / length
+    if arrow_len is None:
+        arrow_len = length//2
+    if arrow_width is None:
+        arrow_width = length//2
 
-    corner_pos90 = (
-        front[0] + dir_row * length - dir_col * length,
-        front[1] + dir_col * length + dir_row * length
-    )
-    corner_neg90 = (
-        front[0] - dir_row * length + dir_col * length,
-        front[1] + dir_col * length + dir_row * length
-    )
-    draw_line(canvas, front, corner_pos90, color)
-    draw_line(canvas, front, corner_neg90, color)
-    draw_line(canvas, corner_pos90, corner_neg90, color)
+    ur, uc = dr / length, dc / length
+
+
+    br = front[0] - arrow_len * ur
+    bc = front[1] - arrow_len * uc
+
+    # perpendicular
+    pr, pc = -uc, ur
+
+    left_corner = (int(br + pr * arrow_width/2), int(bc + pc * arrow_width/2))
+    right_corner = (int(br - pr * arrow_width/2), int(bc - pc * arrow_width/2))
+
+    draw_line(canvas, (int(front[0]), int(front[1])), left_corner, color)
+    draw_line(canvas, (int(front[0]), int(front[1])), right_corner, color)
+    draw_line(canvas, left_corner, right_corner, color)
 
 
 def draw_line(canvas, start, end, color):
@@ -58,13 +64,17 @@ def lerp(start, end, t):
     return row, col
 
 
-def rectangle(canvas, center, size, color=1, thickness=1, outline=True):
-    y, x = center[0], center[1]
+def draw_rectangle(canvas, center, size, color=1, thickness=1, outline=True):
+    if thickness >= size:
+        raise ValueError("Thickness cannot be bigger than size")
+
+    row, col = center
     half = size // 2
-    top = y - half
-    bottom = y + half
-    left = x - half
-    right = x + half
+
+    top = row - half
+    bottom = row + half
+    left = col - half
+    right = col + half
 
     if outline:
         canvas[top:top + thickness, left:right] = color
@@ -78,9 +88,9 @@ def rectangle(canvas, center, size, color=1, thickness=1, outline=True):
 
 if __name__ == '__main__':
     canvas = np.ones((100, 100), dtype=np.uint8) * 255  # white background
-    draw_arrow(canvas, (50, 100), (50, 50))
-    # center = (50, 50)
-    # rectangle(canvas, center, size=10)
+    # draw_arrow(canvas, (50, 100), (50, 50))
+    center = (50, 50)
+    draw_rectangle(canvas, center, size=10, thickness=1, outline=False)
     #
     cv.imshow('canvas', canvas)
     cv.waitKey(0)
