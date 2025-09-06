@@ -7,11 +7,9 @@ from myapp.constants.colors import Color
 def circle_outline(canvas, center, radius, color=1, thickness=1):
     pass
 
-
 def draw_arrow(canvas, front, back, color=Color.BLACK.rgb(), arrow_len=None, arrow_width=None):
     dr = front[0] - back[0]
     dc = front[1] - back[1]
-
 
     length = np.hypot(dr, dc)
     if length == 0:
@@ -50,12 +48,10 @@ def draw_line(canvas, start, end, color):
         col = max(0, min(cols - 1, col))
         canvas[row, col] = color
 
-
 def diagonal_distance(star, end):
     distance_row = abs(star[0] - end[0])
     distance_col = abs(star[1] - end[1])
-    return round(max(distance_row, distance_col))
-
+    return max(distance_row, distance_col)
 
 def lerp(start, end, t):
     row = start[0] * (1 - t) + end[0] * t

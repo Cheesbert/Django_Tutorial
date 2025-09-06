@@ -13,11 +13,12 @@ from myapp.algorithm_methods.draw_shapes import draw_rectangle, draw_arrow, draw
 class Node():
     def __init__(self, data):
         self.data = data
-        self.neighbors = []
+        self.links = []
+    def add_link(self, node: "Node"):
+        self.links.append(node)
 
-    def add_neighbor(self, node: "Node"):
-        self.neighbors.append(node)
-
+    def remove_link(self, node):
+        self.links.remove(node)
 
 class Basic_Graph():
     def __init__(self):
@@ -25,14 +26,30 @@ class Basic_Graph():
         self.size = 0
 
     def add_node(self, data):
-        self.nodes.update({self.size: Node(data)})
+        self.nodes.update({self.size: Node(data, self.size)})
         self.size += 1
 
     def add_edge(self, key1, key2):
         node1 = self.nodes[key1]
         node2 = self.nodes[key2]
-        node1.add_neighbor(node2)
-        node2.add_neighbor(node1)
+        node1.add_link(node2)
+        node2.add_link(node1)
+    def remove_node(self, key):
+        # remove node
+        node = self.nodes[key]
+        for linked_node in node.links:
+            linked_node.remove_link(node)
+
+        self.nodes.pop(key)
+        self.size -= 1
+        # remove edges
+        # update key number
+        # update size
+    def remove_edge(self, key1, key2):
+        node1 = self.nodes[key1]
+        node2 = self.nodes[key2]
+        node1.remove_link(node2)
+        node2.remove.link(node1)
 
     def get_value(self, key):
         return self.nodes[key].data
@@ -60,7 +77,7 @@ class Basic_Graph():
         # Draw edges
         paths = []
         for i, node in enumerate(self.nodes.values()):
-            for neighbor in node.neighbors:
+            for neighbor in node.links:
                 path = dijkstra_grid(canvas, start=positions[node], end=positions[neighbor], node_color=node_color)
                 paths.append(dijkstra_grid(canvas, start=positions[node], end=positions[neighbor], node_color=node_color))
 
@@ -68,7 +85,7 @@ class Basic_Graph():
                     canvas[row, col, :] = edge_color
 
                 row_b, col_b = path[len(path) - (node_size // 2) * 2]
-                # draw_line(canvas, start=(row, col), end=(row_b, col_b), color=Color.CYAN.bgr())
+                # draw_line(canvas, start=(row, col), end=(row_b, col_b), color=Color.CYAN.bgr()) j
                 draw_arrow(canvas, front=(row, col), back=(row_b, col_b), color=edge_color)
                 #edge_color = edge_color
 
@@ -82,7 +99,6 @@ class Basic_Graph():
 
 if __name__ == '__main__':
     g = Basic_Graph()
-
     g.add_node(data=1)
     g.add_node(2)
     g.add_node(3)

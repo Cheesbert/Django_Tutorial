@@ -14,6 +14,7 @@ class TestDrawShapes(unittest.TestCase):
         test_distance = draw_shapes.diagonal_distance(start, end)
         self.assertEqual(expected_distance, test_distance)
 
+
     def test_rectangle_outline(self):
         canvas = np.full((10, 10, 3), colors.WHITE)
         center = (5, 5)
@@ -23,3 +24,4 @@ class TestDrawShapes(unittest.TestCase):
         np.testing.assert_equal(canvas[9, 9], colors.BLACK)
         np.testing.assert_equal(canvas[0, 9], colors.BLACK)
         np.testing.assert_equal(canvas[9, 0], colors.BLACK)
+
